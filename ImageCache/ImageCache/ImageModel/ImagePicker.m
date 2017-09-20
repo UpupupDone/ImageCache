@@ -8,11 +8,11 @@
 
 #import "ImagePicker.h"
 #import "ImageCropperVC.h"
+#import <AssetsLibrary/AssetsLibrary.h>
+#import <AVFoundation/AVCaptureDevice.h>
+#import <AVFoundation/AVMediaFormat.h>
 
-#define ScreenWidth  CGRectGetWidth([UIScreen mainScreen].bounds)
-#define ScreenHeight CGRectGetHeight([UIScreen mainScreen].bounds)
-
-@interface ImagePicker()<UINavigationControllerDelegate, UIImagePickerControllerDelegate> {
+@interface ImagePicker()<UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIAlertViewDelegate> {
     
     BOOL isScale;
     double _scale;
@@ -40,6 +40,11 @@
 
 - (void)showOriginalImagePickerWithType:(ImagePickerType)type InViewController:(UIViewController *)viewController {
     
+    if (![self isJurisdictionWithType:type]) {
+        
+        return ;
+    }
+    
     if (type == ImagePickerCamera) {
         
         self.imagePickerController.sourceType =  UIImagePickerControllerSourceTypeCamera;
@@ -55,6 +60,11 @@
 }
 
 - (void)showImagePickerWithType:(ImagePickerType)type InViewController:(UIViewController *)viewController Scale:(double)scale {
+    
+    if (![self isJurisdictionWithType:type]) {
+        
+        return ;
+    }
     
     if (type == ImagePickerCamera) {
         
@@ -80,6 +90,38 @@
     [viewController presentViewController:_imagePickerController animated:YES completion:nil];
 }
 
+- (BOOL)isJurisdictionWithType:(ImagePickerType)type {
+    
+    if (type == ImagePickerCamera) {
+        
+        AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+        if (authStatus == AVAuthorizationStatusRestricted || authStatus ==AVAuthorizationStatusDenied) {
+            
+            UIAlertView * alart = [[UIAlertView alloc]initWithTitle:@"温馨提示" message:@"请您设置允许APP访问您的相机\n设置>隐私>相机" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+            [alart show];
+            return NO;
+        }
+    }
+    else {
+        
+        ALAuthorizationStatus author = [ALAssetsLibrary authorizationStatus];
+        
+        if (author == ALAuthorizationStatusRestricted || author ==ALAuthorizationStatusDenied) {
+            
+            UIAlertView * alart = [[UIAlertView alloc]initWithTitle:@"温馨提示" message:@"请您设置允许APP访问您的相册\n设置>隐私>照片" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+            
+            [alart show];
+            return NO;
+        }
+    }
+    return YES;
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    
+    [alertView dismissWithClickedButtonIndex:-1 animated:YES];
+}
+
 #pragma mark - UIImagePickerControllerDelegate
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     
@@ -97,7 +139,7 @@
     
     if (isScale) {
         
-        self.imageCropperController = [[ImageCropperVC alloc] initWithImage:image cropFrame:CGRectMake(0, (ScreenHeight - ScreenWidth * _scale) / 2, ScreenWidth, ScreenWidth * _scale) limitScaleRatio:5];
+        self.imageCropperController = [[ImageCropperVC alloc] initWithImage:image cropFrame:CGRectMake(0, (app_screen_height - app_screen_width * _scale) / 2, app_screen_width, app_screen_width * _scale) limitScaleRatio:5];
         __weak __typeof__ (self) weakself = self;
         
         [_imageCropperController setSubmitblock:^(UIViewController *viewController , UIImage *image) {
