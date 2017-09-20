@@ -12,6 +12,9 @@
 #import <AVFoundation/AVCaptureDevice.h>
 #import <AVFoundation/AVMediaFormat.h>
 
+#define ScreenWidth  CGRectGetWidth([UIScreen mainScreen].bounds)
+#define ScreenHeight CGRectGetHeight([UIScreen mainScreen].bounds)
+
 @interface ImagePicker()<UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIAlertViewDelegate> {
     
     BOOL isScale;
@@ -139,7 +142,7 @@
     
     if (isScale) {
         
-        self.imageCropperController = [[ImageCropperVC alloc] initWithImage:image cropFrame:CGRectMake(0, (app_screen_height - app_screen_width * _scale) / 2, app_screen_width, app_screen_width * _scale) limitScaleRatio:5];
+        self.imageCropperController = [[ImageCropperVC alloc] initWithImage:image cropFrame:CGRectMake(0, (ScreenHeight - ScreenWidth * _scale) / 2, ScreenWidth, ScreenWidth * _scale) limitScaleRatio:5];
         __weak __typeof__ (self) weakself = self;
         
         [_imageCropperController setSubmitblock:^(UIViewController *viewController , UIImage *image) {
