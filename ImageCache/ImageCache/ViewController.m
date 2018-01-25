@@ -20,7 +20,8 @@
 
 @interface ViewController ()<UIActionSheetDelegate, ImagePickerDelegate>
 
-@property (nonatomic, strong) __block UIActionSheet *customSheet;
+@property (nonatomic, strong)  UIActionSheet *customSheetTypeOne;
+@property (nonatomic, strong)  UIActionSheet *customSheetTypeTwo;
 
 @property (nonatomic, assign) __block NSInteger indexRow;
 
@@ -43,6 +44,7 @@
 - (void)initData {
     
     _titleArr = @[@"XXXXXX组织:", @"XXXXXX机构:", @"XXXXXX旅行社:", @"XXXXXX机场:", @"XXXXXX公司:", @"XXXXXX超市:", @"XXXXXX广场"];
+    [[ImageCache sharedCache] removeAllImages];
 }
 
 #pragma mark TableView
@@ -71,27 +73,45 @@
     
     __weak __typeof__ (self) weakSelf = self;
     
-    [cell setTitle:_titleArr[row] imageFlag:row editBlock:^(NSInteger idx) {
-        
-        weakSelf.indexRow = idx;
-        [weakSelf.customSheet showInView:weakSelf.view];
-    }];
-    
     NSString *imageName = [NSString stringWithFormat:@"%@_%ld", IMGNAME_PREFIX, row];
     [cell setImgBtnImage:[[ImageCache sharedCache] readImageWithName:imageName]];
+    
+    [cell setTitle:_titleArr[row] imageFlag:row editBlock:^(NSInteger idx) {
+        
+        NSString *imageName = [NSString stringWithFormat:@"%@_%ld", IMGNAME_PREFIX, idx];
+        UIImage *image = [[ImageCache sharedCache] readImageWithName:imageName];
+        
+        weakSelf.indexRow = idx;
+        
+        if (image) {
+            
+            [weakSelf.customSheetTypeOne showInView:weakSelf.view];
+        } else {
+            [weakSelf.customSheetTypeTwo showInView:weakSelf.view];
+        }
+    }];
+    
     return cell;
 }
 
 #pragma - Action
 
-- (UIActionSheet *)customSheet {
+- (UIActionSheet *)customSheetTypeOne {
     
-    if (!_customSheet) {
+    if (!_customSheetTypeOne) {
         
-        self.customSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"相机", @"相册", @"删除", nil];
-        [_customSheet showInView:self.view];
+        self.customSheetTypeOne = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"相机", @"相册", @"删除", nil];
     }
-    return _customSheet;
+    return _customSheetTypeOne;
+}
+
+- (UIActionSheet *)customSheetTypeTwo {
+    
+    if (!_customSheetTypeTwo) {
+        
+        self.customSheetTypeTwo = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"相机", @"相册", nil];
+    }
+    return _customSheetTypeTwo;
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {

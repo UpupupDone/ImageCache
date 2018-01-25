@@ -81,7 +81,7 @@
 
 - (UIImage *)readImageWithName:(NSString *)imageName {
     
-    NSString *documentsPath =[NSString stringWithFormat:@"%@/Documents/OpenAccImage", NSHomeDirectory()];
+    NSString *documentsPath = [NSString stringWithFormat:@"%@/Documents/OpenAccImage", NSHomeDirectory()];
     
     if (!_saveFilePath) {
         
@@ -101,10 +101,6 @@
         NSData *imageData = [[NSData alloc] initWithBase64EncodedData:base64Data options:NSDataBase64DecodingIgnoreUnknownCharacters];
         img = [[UIImage alloc] initWithData:imageData];
     }
-    else {
-        
-        img = [UIImage imageNamed:@"addimageshadow"];
-    }
     
     return img;
 }
@@ -120,6 +116,11 @@
 
 - (void)removeAllImages {
     
+    if (!_saveFilePath) {
+        
+        _saveFilePath = [NSString stringWithFormat:@"%@/Documents/OpenAccImage", NSHomeDirectory()];
+    }
+
     [[NSFileManager defaultManager] removeItemAtPath:_saveFilePath error:nil];
 }
 

@@ -17,8 +17,8 @@
 
 @interface ImagePicker()<UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIAlertViewDelegate> {
     
-    BOOL isScale;
-    double _scale;
+//    BOOL isScale;
+//    double _scale;
 }
 
 @property (nonatomic, strong) UIImagePickerController *imagePickerController;
@@ -57,8 +57,8 @@
         self.imagePickerController.sourceType =  UIImagePickerControllerSourceTypePhotoLibrary;
     }
     
-    isScale = NO;
-    self.imagePickerController.allowsEditing = YES;
+//    isScale = NO;
+//    self.imagePickerController.allowsEditing = YES;
     [viewController presentViewController:_imagePickerController animated:YES completion:nil];
 }
 
@@ -78,17 +78,17 @@
         self.imagePickerController.sourceType =  UIImagePickerControllerSourceTypePhotoLibrary;
     }
     
-    self.imagePickerController.allowsEditing = NO;
-    isScale = YES;
-    
-    if(scale > 0 && scale <= 1.5) {
-        
-        _scale = scale;
-    }
-    else {
-        
-        _scale = 1;
-    }
+//    self.imagePickerController.allowsEditing = NO;
+//    isScale = YES;
+//
+//    if(scale > 0 && scale <= 1.5) {
+//
+//        _scale = scale;
+//    }
+//    else {
+//
+//        _scale = 1;
+//    }
     
     [viewController presentViewController:_imagePickerController animated:YES completion:nil];
 }
@@ -140,41 +140,41 @@
         UIGraphicsEndImageContext();
     }
     
-    if (isScale) {
-        
-        self.imageCropperController = [[ImageCropperVC alloc] initWithImage:image cropFrame:CGRectMake(0, (ScreenHeight - ScreenWidth * _scale) / 2, ScreenWidth, ScreenWidth * _scale) limitScaleRatio:5];
-        __weak __typeof__ (self) weakself = self;
-        
-        [_imageCropperController setSubmitblock:^(UIViewController *viewController , UIImage *image) {
-            
-            [viewController dismissViewControllerAnimated:YES completion:nil];
-            
-            if (weakself.delegate) {
-                
-                [weakself.delegate imagePicker:weakself didFinished:image];
-            }
-        }];
-        
-        [_imageCropperController setCancelblock:^(UIViewController *viewController) {
-            
-            UIImagePickerController *picker = (UIImagePickerController *)viewController.navigationController;
-            
-            if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
-                
-                [viewController.navigationController dismissViewControllerAnimated:YES completion:nil];
-            }
-            else {
-                
-                [viewController.navigationController popViewControllerAnimated:YES];
-            }
-        }];
-        [picker pushViewController:self.imageCropperController animated:YES];
-    }
-    else {
-        
+//    if (isScale) {
+//
+//        self.imageCropperController = [[ImageCropperVC alloc] initWithImage:image cropFrame:CGRectMake(0, (ScreenHeight - ScreenWidth * _scale) / 2, ScreenWidth, ScreenWidth * _scale) limitScaleRatio:5];
+//        __weak __typeof__ (self) weakself = self;
+//
+//        [_imageCropperController setSubmitblock:^(UIViewController *viewController , UIImage *image) {
+//
+//            [viewController dismissViewControllerAnimated:YES completion:nil];
+//
+//            if (weakself.delegate) {
+//
+//                [weakself.delegate imagePicker:weakself didFinished:image];
+//            }
+//        }];
+//
+//        [_imageCropperController setCancelblock:^(UIViewController *viewController) {
+//
+//            UIImagePickerController *picker = (UIImagePickerController *)viewController.navigationController;
+//
+//            if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
+//
+//                [viewController.navigationController dismissViewControllerAnimated:YES completion:nil];
+//            }
+//            else {
+//
+//                [viewController.navigationController popViewControllerAnimated:YES];
+//            }
+//        }];
+//        [picker pushViewController:self.imageCropperController animated:YES];
+//    }
+//    else {
+    
         [picker dismissViewControllerAnimated:YES completion:^{}];
         [self.delegate imagePicker:self didFinished:image];
-    }
+//    }
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
@@ -194,7 +194,7 @@
         
         _imagePickerController = [[UIImagePickerController alloc] init];
         _imagePickerController.delegate = self;
-        _imagePickerController.allowsEditing = NO;
+//        _imagePickerController.allowsEditing = NO;
     }
     return _imagePickerController;
 }
